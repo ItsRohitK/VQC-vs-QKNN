@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF--8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,35 +13,50 @@
         /* 3. Use the Inter font family */
         body {
             font-family: "Inter", sans-serif;
-            background-color: #111827; /* bg-gray-900 */
+            background-color: #111827;
+            /* bg-gray-900 */
         }
+
         /* Custom styles for D3 plot */
         .grid-line {
-            stroke: #374151; /* bg-gray-700 */
+            stroke: #374151;
+            /* bg-gray-700 */
             stroke-opacity: 0.5;
             shape-rendering: crispEdges;
         }
+
         .domain {
-            stroke: #6b7280; /* bg-gray-500 */
+            stroke: #6b7280;
+            /* bg-gray-500 */
         }
+
         .tick line {
-            stroke: #6b7280; /* bg-gray-500 */
+            stroke: #6b7280;
+            /* bg-gray-500 */
         }
+
         .tick text {
-            fill: #d1d5db; /* text-gray-300 */
+            fill: #d1d5db;
+            /* text-gray-300 */
             font-size: 12px;
         }
+
         /* Custom scrollbar for log boxes */
         .log-box::-webkit-scrollbar {
             width: 6px;
         }
+
         .log-box::-webkit-scrollbar-track {
-            background: #1f2937; /* bg-gray-800 */
+            background: #1f2937;
+            /* bg-gray-800 */
         }
+
         .log-box::-webkit-scrollbar-thumb {
-            background: #4b5563; /* bg-gray-600 */
+            background: #4b5563;
+            /* bg-gray-600 */
             border-radius: 3px;
         }
+
         /* D3 Tooltip */
         .tooltip {
             position: absolute;
@@ -54,20 +70,24 @@
             opacity: 0;
             transition: opacity 0.2s;
         }
+
         /* D3 Cost Graph Line */
         .cost-line {
             fill: none;
-            stroke: #60a5fa; /* blue-400 */
+            stroke: #60a5fa;
+            /* blue-400 */
             stroke-width: 2px;
         }
     </style>
 </head>
+
 <body class="text-gray-200 p-4 md:p-8">
 
     <div class="max-w-7xl mx-auto">
         <!-- Header -->
         <header class="text-center mb-8">
-            <h1 class="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+            <h1
+                class="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
                 Quantum Classifier Comparison
             </h1>
             <p class="text-lg text-gray-400 mt-2">Simulating "Active" (VQC) vs. "Lazy" (QKNN) Learners</p>
@@ -79,29 +99,33 @@
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div class="flex flex-col">
                     <label for="dataset" class="font-medium text-sm mb-1">Dataset Type:</label>
-                    <select id="dataset" class="bg-gray-700 text-white rounded-md px-3 py-2 border-gray-600 focus:ring-blue-500 focus:border-blue-500">
+                    <select id="dataset"
+                        class="bg-gray-700 text-white rounded-md px-3 py-2 border-gray-600 focus:ring-blue-500 focus:border-blue-500">
                         <option value="moons">Moons (Non-Linear)</option>
                         <option value="circles">Circles (Non-Linear)</option>
                         <option value="blobs">Blobs (Linear)</option>
                     </select>
                 </div>
                 <div class="flex flex-col">
-                    <label for="n_samples" class="font-medium text-sm mb-1">Total Samples: <span id="n_samples_label" class="font-bold">200</span></label>
+                    <label for="n_samples" class="font-medium text-sm mb-1">Total Samples: <span id="n_samples_label"
+                            class="font-bold">200</span></label>
                     <input type="range" id="n_samples" min="50" max="500" value="200" step="10" class="w-full">
                 </div>
                 <div class="flex flex-col">
-                    <label for="noise" class="font-medium text-sm mb-1">Dataset Noise: <span id="noise_label" class="font-bold">0.10</span></label>
+                    <label for="noise" class="font-medium text-sm mb-1">Dataset Noise: <span id="noise_label"
+                            class="font-bold">0.10</span></label>
                     <input type="range" id="noise" min="0" max="0.5" value="0.1" step="0.01" class="w-full">
                 </div>
-                <button id="generateData" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg transition duration-200 self-end">
+                <button id="generateData"
+                    class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg transition duration-200 self-end">
                     Generate New Data
                 </button>
             </div>
         </div>
 
         <!-- Main Content: Plot + Comparison Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
+        <!-- <div class="grid grid-cols-1 lg:grid-cols-3 gap-6"> -->
+        <div class="flex flex-col gap-6">
             <!-- Plot Area -->
             <div class="lg:col-span-2 bg-gray-800 p-4 rounded-lg shadow-xl min-h-[500px]">
                 <h2 class="text-xl font-semibold mb-2 text-center">Classifier Decision Boundaries</h2>
@@ -110,42 +134,52 @@
                     <div id="plot-tooltip" class="tooltip"></div>
                 </div>
                 <div class="flex flex-wrap justify-center gap-4 md:gap-6 mt-2">
-                    <span class="flex items-center"><span class="w-3 h-3 rounded-full bg-blue-400 mr-2"></span>Data: Class 0</span>
-                    <span class="flex items-center"><span class="w-3 h-3 rounded-full bg-red-400 mr-2"></span>Data: Class 1</span>
-                    <span class="flex items-center"><span class="w-3 h-3 rounded-sm bg-blue-400/20 mr-2"></span>Region: Predicted Class 0</span>
-                    <span class="flex items-center"><span class="w-3 h-3 rounded-sm bg-red-400/20 mr-2"></span>Region: Predicted Class 1</span>
+                    <span class="flex items-center"><span class="w-3 h-3 rounded-full bg-blue-400 mr-2"></span>Data:
+                        Class 0</span>
+                    <span class="flex items-center"><span class="w-3 h-3 rounded-full bg-red-400 mr-2"></span>Data:
+                        Class 1</span>
+                    <span class="flex items-center"><span class="w-3 h-3 rounded-sm bg-blue-400/20 mr-2"></span>Region:
+                        Predicted Class 0</span>
+                    <span class="flex items-center"><span class="w-3 h-3 rounded-sm bg-red-400/20 mr-2"></span>Region:
+                        Predicted Class 1</span>
                 </div>
             </div>
 
             <!-- Comparison Cards -->
             <div class="lg:col-span-1 space-y-6">
-                
+
                 <!-- VQC Card -->
                 <div class="bg-gray-800 p-6 rounded-lg shadow-xl">
                     <h2 class="text-2xl font-semibold mb-2 text-blue-400">Model 1: VQC (Active Learner)</h2>
                     <p class="text-sm text-gray-400 mb-4">
-                        Simulates a <strong>Variational Quantum Classifier (VQC)</strong> or Quantum Neural Network. It's an "active" learner that finds optimal parameters through a hybrid training loop. This is <strong>slow to train</strong> but <strong>fast to predict</strong>.
+                        Simulates a <strong>Variational Quantum Classifier (VQC)</strong> or Quantum Neural Network.
+                        It's an "active" learner that finds optimal parameters through a hybrid training loop. This is
+                        <strong>slow to train</strong> but <strong>fast to predict</strong>.
                     </p>
                     <div class="text-xs text-gray-500 bg-gray-900 p-2 rounded-md mb-4">
-                        <strong>Simulation:</strong> We use a classical <strong>2-Layer Neural Network (MLP)</strong>. Like a VQC, it's a non-linear model that learns weights iteratively via backpropagation.
+                        <strong>Simulation:</strong> We use a classical <strong>2-Layer Neural Network (MLP)</strong>.
+                        Like a VQC, it's a non-linear model that learns weights iteratively via backpropagation.
                     </div>
-                    
+
                     <!-- VQC Controls -->
                     <div class="grid grid-cols-2 gap-4 mb-4">
                         <div class="flex flex-col">
-                            <label for="vqc_epochs" class="font-medium text-sm mb-1">Epochs: <span id="vqc_epochs_label" class="font-bold">100</span></label>
+                            <label for="vqc_epochs" class="font-medium text-sm mb-1">Epochs: <span id="vqc_epochs_label"
+                                    class="font-bold">100</span></label>
                             <input type="range" id="vqc_epochs" min="10" max="300" value="100" step="10" class="w-full">
                         </div>
                         <div class="flex flex-col">
-                            <label for="vqc_lr" class="font-medium text-sm mb-1">Learning Rate: <span id="vqc_lr_label" class="font-bold">0.1</span></label>
+                            <label for="vqc_lr" class="font-medium text-sm mb-1">Learning Rate: <span id="vqc_lr_label"
+                                    class="font-bold">0.1</span></label>
                             <input type="range" id="vqc_lr" min="0.001" max="1" value="0.1" step="0.001" class="w-full">
                         </div>
                     </div>
 
-                    <button id="runVQC" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg mb-4 transition duration-200">
+                    <button id="runVQC"
+                        class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg mb-4 transition duration-200">
                         Train & Run VQC
                     </button>
-                    
+
                     <!-- VQC Metrics -->
                     <h3 class="font-semibold text-gray-300 text-center mb-2">Test Set Performance</h3>
                     <div class="grid grid-cols-3 gap-2 text-center mb-4">
@@ -182,7 +216,7 @@
                             <div id="vqc_tp" class="font-bold text-lg">-</div>
                         </div>
                     </div>
-                    
+
                     <!-- VQC Training Graph -->
                     <h3 class="font-semibold text-gray-300 text-center mb-2">Live Training Cost</h3>
                     <div id="vqc-cost-container" class="w-full h-24 bg-gray-900 rounded-md">
@@ -194,24 +228,31 @@
                 <div class="bg-gray-800 p-6 rounded-lg shadow-xl">
                     <h2 class="text-2xl font-semibold mb-2 text-red-400">Model 2: QKNN (Lazy Learner)</h2>
                     <p class="text-sm text-gray-400 mb-4">
-                        Simulates a <strong>Quantum K-Nearest Neighbors</strong> classifier. It's a "lazy" learner that does <strong>no training</strong>. To classify a new point, it must compute the distance to <em>every</em> training point. This makes "training" <strong>instant</strong> but prediction <strong>very slow</strong>.
+                        Simulates a <strong>Quantum K-Nearest Neighbors</strong> classifier. It's a "lazy" learner that
+                        does <strong>no training</strong>. To classify a new point, it must compute the distance to
+                        <em>every</em> training point. This makes "training" <strong>instant</strong> but prediction
+                        <strong>very slow</strong>.
                     </p>
                     <div class="text-xs text-gray-500 bg-gray-900 p-2 rounded-md mb-4">
-                        <strong>Simulation:</strong> We use a classical <strong>K-Nearest Neighbors (KNN)</strong> algorithm. This perfectly demonstrates the "lazy" trade-off: 0ms train time, but prediction time scales with dataset size.
+                        <strong>Simulation:</strong> We use a classical <strong>K-Nearest Neighbors (KNN)</strong>
+                        algorithm. This perfectly demonstrates the "lazy" trade-off: 0ms train time, but prediction time
+                        scales with dataset size.
                     </div>
 
                     <!-- QKNN Controls -->
                     <div class="grid grid-cols-1 gap-4 mb-4">
                         <div class="flex flex-col">
-                            <label for="qknn_k" class="font-medium text-sm mb-1">Neighbors (K): <span id="qknn_k_label" class="font-bold">5</span></label>
+                            <label for="qknn_k" class="font-medium text-sm mb-1">Neighbors (K): <span id="qknn_k_label"
+                                    class="font-bold">5</span></label>
                             <input type="range" id="qknn_k" min="1" max="15" value="5" step="1" class="w-full">
                         </div>
                     </div>
 
-                    <button id="runQKNN" class="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-2 px-4 rounded-lg mb-4 transition duration-200">
+                    <button id="runQKNN"
+                        class="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-2 px-4 rounded-lg mb-4 transition duration-200">
                         Run QKNN
                     </button>
-                    
+
                     <!-- QKNN Metrics -->
                     <h3 class="font-semibold text-gray-300 text-center mb-2">Test Set Performance</h3>
                     <div class="grid grid-cols-3 gap-2 text-center mb-4">
@@ -248,26 +289,34 @@
                             <div id="qknn_tp" class="font-bold text-lg">-</div>
                         </div>
                     </div>
-                    
-                    <div class="log-box w-full h-32 bg-gray-900 rounded-md p-2 text-xs text-gray-400 font-mono overflow-y-auto" id="qknn_log">
+
+                    <div class="log-box w-full h-32 bg-gray-900 rounded-md p-2 text-xs text-gray-400 font-mono overflow-y-auto"
+                        id="qknn_log">
                         Click "Run QKNN" to start...
                     </div>
                 </div>
 
             </div>
         </div>
-        
+
         <!-- Key Takeaway -->
         <div class="bg-gray-800 p-6 rounded-lg shadow-xl mt-6">
-            <h2 class="text-2xl font-semibold mb-2 text-center text-purple-400">Key Takeaway: The "Active" vs. "Lazy" Trade-Off</h2>
+            <h2 class="text-2xl font-semibold mb-2 text-center text-purple-400">Key Takeaway: The "Active" vs. "Lazy"
+                Trade-Off</h2>
             <p class="text-gray-400 text-center max-w-3xl mx-auto">
-                This project demonstrates the fundamental difference between two types of algorithms, which is a key concept in both classical and quantum machine learning.
+                This project demonstrates the fundamental difference between two types of algorithms, which is a key
+                concept in both classical and quantum machine learning.
                 <br><br>
-                The <strong>VQC (Active)</strong> model spends a lot of time up-front in a "training phase" to learn a compact mathematical function. This makes training slow, but prediction (inference) incredibly fast.
+                The <strong>VQC (Active)</strong> model spends a lot of time up-front in a "training phase" to learn a
+                compact mathematical function. This makes training slow, but prediction (inference) incredibly fast.
                 <br><br>
-                The <strong>QKNN (Lazy)</strong> model does zero training. It just stores the data. This makes training instant, but prediction is extremely slow because it must compare every new point to the entire training set.
+                The <strong>QKNN (Lazy)</strong> model does zero training. It just stores the data. This makes training
+                instant, but prediction is extremely slow because it must compare every new point to the entire training
+                set.
                 <br><br>
-                <strong>Try it yourself:</strong> Slide the "Total Samples" to 500 and run both. You'll see the VQC's train time increase, but the QKNN's <strong>predict time</strong> will explode. This is the trade-off in action.
+                <strong>Try it yourself:</strong> Slide the "Total Samples" to 500 and run both. You'll see the VQC's
+                train time increase, but the QKNN's <strong>predict time</strong> will explode. This is the trade-off in
+                action.
             </p>
         </div>
 
@@ -293,7 +342,7 @@
             const noiseSlider = document.getElementById('noise');
             const noiseLabel = document.getElementById('noise_label');
             const generateDataBtn = document.getElementById('generateData');
-            
+
             // VQC Elements
             const runVqcBtn = document.getElementById('runVQC');
             const vqcEpochsSlider = document.getElementById('vqc_epochs');
@@ -335,8 +384,8 @@
             // --- Data Generation ---
             const randn_bm = () => {
                 let u = 0, v = 0;
-                while(u === 0) u = Math.random();
-                while(v === 0) v = Math.random();
+                while (u === 0) u = Math.random();
+                while (v === 0) v = Math.random();
                 return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
             };
 
@@ -397,7 +446,7 @@
                 const splitIdx = Math.floor(data.length * (1 - testSplit));
                 const train = data.slice(0, splitIdx);
                 const test = data.slice(splitIdx);
-                
+
                 X_train = train.map(d => d.x);
                 y_train = train.map(d => d.y);
                 X_test = test.map(d => d.x);
@@ -411,7 +460,7 @@
 
                 svg.selectAll("*").remove();
                 const g = svg.append("g").attr("transform", `translate(${plotMargin.left}, ${plotMargin.top})`);
-                
+
                 const allX = X.map(d => d[0]), allY = X.map(d => d[1]);
                 const xDomain = d3.extent(allX), yDomain = d3.extent(allY);
                 const xRange = xDomain[1] - xDomain[0], yRange = yDomain[1] - yDomain[0];
@@ -420,7 +469,7 @@
                 xScale = d3.scaleLinear()
                     .domain([xDomain[0] - xRange * padding, xDomain[1] + xRange * padding])
                     .range([0, plotWidth]);
-                    
+
                 yScale = d3.scaleLinear()
                     .domain([yDomain[0] - yRange * padding, yDomain[1] + yRange * padding])
                     .range([plotHeight, 0]);
@@ -451,11 +500,11 @@
                     .attr("opacity", 0.8)
                     .on("mouseover", (event, d) => {
                         tooltip.style("opacity", 1)
-                               .html(`Coords: (${d.x[0].toFixed(2)}, ${d.x[1].toFixed(2)})<br>Class: ${d.y}`);
+                            .html(`Coords: (${d.x[0].toFixed(2)}, ${d.x[1].toFixed(2)})<br>Class: ${d.y}`);
                     })
                     .on("mousemove", (event) => {
                         tooltip.style("left", (event.pageX + 15) + "px")
-                               .style("top", (event.pageY - 28) + "px");
+                            .style("top", (event.pageY - 28) + "px");
                     })
                     .on("mouseout", () => {
                         tooltip.style("opacity", 0);
@@ -476,7 +525,7 @@
 
                 const boundary = svg.select("#decision-boundary");
                 boundary.selectAll("rect").remove();
-                
+
                 boundary.selectAll("rect")
                     .data(grid)
                     .enter()
@@ -507,7 +556,7 @@
                     tp, fp, tn, fn
                 };
             };
-            
+
             const displayMetrics = (elPrefix, timeMetrics, classMetrics) => {
                 document.getElementById(`${elPrefix}_accuracy`).textContent = `${classMetrics.accuracy}%`;
                 document.getElementById(`${elPrefix}_train_time`).textContent = `${timeMetrics.train.toFixed(0)} ms`;
@@ -517,7 +566,7 @@
                 document.getElementById(`${elPrefix}_fn`).textContent = classMetrics.fn;
                 document.getElementById(`${elPrefix}_tp`).textContent = classMetrics.tp;
             };
-            
+
             const resetMetrics = (elPrefix) => {
                 document.getElementById(`${elPrefix}_accuracy`).textContent = `-`;
                 document.getElementById(`${elPrefix}_train_time`).textContent = `-`;
@@ -529,7 +578,7 @@
             };
 
             // --- Classifier 1: (Mock) VQC -> Neural Network (MLP) ---
-            
+
             // Sigmoid activation function and its derivative
             const sigmoid = (x) => 1 / (1 + Math.exp(-x));
             const sigmoid_derivative = (x) => x * (1 - x);
@@ -603,7 +652,7 @@
                         this.b1[j] += lr * E1[j];
                     }
                 }
-                
+
                 train(X, y, epochs, lr) {
                     const costHistory = [];
                     for (let epoch = 0; epoch < epochs; epoch++) {
@@ -625,18 +674,18 @@
             }
 
             let vqcModel = new MLP(2, 4, 1); // 2 inputs, 4 hidden neurons, 1 output
-            
+
             const plotCost = (costHistory) => {
                 vqcCostSvg.selectAll("*").remove();
                 const costContainer = document.getElementById('vqc-cost-container');
                 const width = costContainer.clientWidth;
                 const height = costContainer.clientHeight;
                 const margin = { top: 10, right: 10, bottom: 20, left: 30 };
-                
+
                 const x = d3.scaleLinear()
                     .domain([0, costHistory.length])
                     .range([margin.left, width - margin.right]);
-                
+
                 const y = d3.scaleLinear()
                     .domain(d3.extent(costHistory))
                     .range([height - margin.bottom, margin.top]);
@@ -651,7 +700,7 @@
                     .datum(costHistory)
                     .attr("class", "cost-line")
                     .attr("d", line);
-                    
+
                 // X axis
                 g.append("g")
                     .attr("class", "axis")
@@ -665,8 +714,8 @@
             };
 
             // --- Classifier 2: (Mock) QKNN ---
-            const euclideanDistance = (a, b) => Math.sqrt((a[0] - b[0])**2 + (a[1] - b[1])**2);
-            
+            const euclideanDistance = (a, b) => Math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2);
+
             const qknnPredict = (x_new, k) => {
                 const distances = X_train.map((x_train, i) => ({
                     dist: euclideanDistance(x_new, x_train),
@@ -678,7 +727,7 @@
                 for (const n of neighbors) votes[n.label]++;
                 return votes[0] > votes[1] ? 0 : 1;
             };
-            
+
             // --- Main App Logic ---
             const handleGenerateData = () => {
                 const n = parseInt(nSamplesSlider.value);
@@ -689,17 +738,17 @@
                     case 'circles': data = makeCircles(n, noise); break;
                     case 'blobs': data = makeBlobs(n, noise); break;
                 }
-                
+
                 shuffleAndSplit(data.X, data.y);
                 setupPlot(X_train, y_train);
                 plotData(X_train, y_train);
-                
+
                 resetMetrics('vqc');
                 resetMetrics('qknn');
                 vqcCostSvg.selectAll("*").remove();
                 log(qknnLogEl, 'Generate new data, then click "Run QKNN".');
             };
-            
+
             const handleRunVQC = () => {
                 // 0. Get params
                 const epochs = parseInt(vqcEpochsSlider.value);
@@ -708,29 +757,29 @@
                 // 1. Train
                 runVqcBtn.disabled = true;
                 runVqcBtn.textContent = "Training...";
-                
+
                 // Use setTimeout to allow UI to update before blocking
                 setTimeout(() => {
                     let startTime = performance.now();
                     vqcModel = new MLP(2, 4, 1); // Re-initialize model
                     const costHistory = vqcModel.train(X_train, y_train, epochs, lr);
                     let trainTime = performance.now() - startTime;
-                    
+
                     // 2. Predict
                     startTime = performance.now();
                     let correct = 0;
                     const predictions = X_test.map(x => vqcModel.predict(x));
                     let predictTime = performance.now() - startTime;
-                    
+
                     // 3. Calculate & Display Metrics
                     const y_test_flat = y_test.map(y => y[0]);
                     const metrics = calculateMetrics(y_test_flat, predictions);
                     displayMetrics('vqc', { train: trainTime, predict: predictTime }, metrics);
-                    
+
                     // 4. Plot
                     plotBoundary(vqcModel.predict.bind(vqcModel), ["#60a5fa", "#f87171"]);
                     plotCost(costHistory);
-                    
+
                     runVqcBtn.disabled = false;
                     runVqcBtn.textContent = "Train & Run VQC";
                 }, 10); // 10ms delay
@@ -745,14 +794,14 @@
                 runQknnBtn.textContent = "Predicting...";
                 let trainTime = 0;
                 log(qknnLogEl, "QKNN is 'lazy'. No training needed.\nStarting prediction (this is the slow part)...");
-                
+
                 // Use setTimeout to allow UI to update
                 setTimeout(() => {
                     // 2. Predict (slow part)
                     let startTime = performance.now();
                     let logMsg = "Running QKNN predictions...\n";
                     log(qknnLogEl, logMsg);
-                    
+
                     const predictions = X_test.map((x, i) => {
                         if (i % 20 === 0 && i > 0) {
                             logMsg += `Predicted ${i}/${X_test.length} points...\n`;
@@ -760,7 +809,7 @@
                         }
                         return qknnPredict(x, k);
                     });
-                    
+
                     let predictTime = performance.now() - startTime;
                     logMsg += `\nPrediction complete for ${X_test.length} points.`;
                     log(qknnLogEl, logMsg);
@@ -772,7 +821,7 @@
 
                     // 4. Plot boundary
                     plotBoundary((x) => qknnPredict(x, k), ["#60a5fa", "#f87171"]);
-                    
+
                     runQknnBtn.disabled = false;
                     runQknnBtn.textContent = "Run QKNN";
                 }, 10); // 10ms delay
@@ -784,14 +833,14 @@
             vqcEpochsSlider.oninput = () => vqcEpochsLabel.textContent = vqcEpochsSlider.value;
             vqcLrSlider.oninput = () => vqcLrLabel.textContent = parseFloat(vqcLrSlider.value).toFixed(3);
             qknnKSlider.oninput = () => qknnKLabel.textContent = qknnKSlider.value;
-            
+
             generateDataBtn.onclick = handleGenerateData;
             runVqcBtn.onclick = handleRunVQC;
             runQknnBtn.onclick = handleRunQKNN;
 
             // Initial data load
             handleGenerateData();
-            
+
             // Handle window resize
             window.onresize = () => {
                 if (X_train) {
@@ -799,9 +848,9 @@
                     plotData(X_train, y_train);
                     // Re-plot boundaries if models exist
                     if (vqcAccuracyEl.textContent !== '-') {
-                         plotBoundary(vqcModel.predict.bind(vqcModel), ["#60a5fa", "#f87171"]);
-                         // Redraw cost graph (it's fast)
-                         handleRunVQC(); // This is a simple way to force redraw
+                        plotBoundary(vqcModel.predict.bind(vqcModel), ["#60a5fa", "#f87171"]);
+                        // Redraw cost graph (it's fast)
+                        handleRunVQC(); // This is a simple way to force redraw
                     }
                     if (qknnAccuracyEl.textContent !== '-') {
                         const k = parseInt(qknnKSlider.value);
@@ -812,5 +861,5 @@
         });
     </script>
 </body>
-</html>
 
+</html>
